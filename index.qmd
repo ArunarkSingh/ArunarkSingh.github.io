@@ -1,7 +1,12 @@
 ---
-title: "portfolio"
+title: "ArunarkSingh"
 ---
+![](images/profile.jpg){width=250px}
 
-This is a Quarto website.
+I completed my Bachelor's of Applied Science in Electrical Engineering from UBC, and I also specialize in the field of Machine Learning. Because of my interest in ML and Data Science, i decided to further persue MDS at UBC, helping me deepen my knowledge and apply the knowledge in the real world.
+
+As a kid I was always curious about the technology that surrounded me, always exploring and always learning. This curiosity is what led me towards electrical engineering at UBC for my bachelors, and what led me to research and dig deep into Machine Learning and Deep Learning systems. I did a bunch of projects, performed research with professors, just to deepen my knowledge of Machine Learning systems. And this is why I am pursuing Master's of Data Science at UBC, I want to understand and use the Data and information around us to build systems that actually make decisions better, not just process numbers. MDS is giving me the statistical and engineering foundation to go from research-scale ML to something that can work reliably in the real world, and that's the direction I want to take my career.
+
+
 
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.

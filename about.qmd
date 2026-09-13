@@ -2,4 +2,16 @@
 title: "About"
 ---
 
-About this site
+## Background
+
+I grew up with strong ties to both Oman and India, and moved to Vancouver for my undergrad. I completed my Bachelor of Applied Science in Electrical and Computer Engineering at UBC, where I spent most of my time in research: working on protein language models in a computational biology lab, and later on vision transformer and diffusion architectures. Alongside that, I taught robotics and coding part-time to elementary school students, which turned out to be one of the more grounding parts of my week. 
+
+And I have done so many, and I mean so many ML related projects for fun and to gain the depth.
+
+## Why data science
+
+My path into data science came through research, not a classroom. Working with large models and large datasets, I kept running into the same bottleneck: the hard part usually wasn't the model, it was the data. MDS is where I'm building the statistical and engineering foundation I was missing, so I can move between research-style ML and the kind of data work that actually ships.
+
+## Outside of data science
+
+Outside of work, I play soccer and basketball, and I'm slowly getting better at neither. I keep a small garden going, mostly tulsi, and chilli, alongside some Pothos and Peperomia that are much harder to kill than the vegetables. I read manga, play games on the PS4 when I get the time, and I build small interactive web projects for fun, usually something no one asked for but that I wanted to see exist.

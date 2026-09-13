@@ -1,16 +1,51 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "portfolio",
+    "objectID": "posts/first-weeks/index.html",
+    "href": "posts/first-weeks/index.html",
+    "title": "My first weeks in MDS",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "Orientation week was a bit of a whiplash after four years of undergrad. I came in from an Electrical and Computer Engineering background, having spent most of my final year buried in machine learning research rather than classes, so sitting in a room full of new classmates from economics, biology, and computer science backgrounds was a good reminder of how differently people think about the same data problems. The first few days were less about content and more about tooling: getting comfortable with the terminal, setting up Git and GitHub properly, and realizing how much of this program runs on version control and reproducibility rather than one-off scripts.\nThe first week of actual classes moved fast. What surprised me most was how much emphasis is placed on communication and workflow, things like commit hygiene, writing for a reader who isn’t you, and publishing work publicly, rather than just the statistics and modeling I expected to be the focus. Coming from a research background where a lot of code lived in a single Colab notebook, having to think about project structure, .gitignore-style discipline, and a live website from week one has been a useful shift.\nA few weeks in, I’m feeling good about the pace. It’s demanding, but in a way that feels productive rather than just busy. I’m looking forward to seeing how the more technical courses build on this foundation, and to having a portfolio that actually reflects the work as I go, instead of scrambling to put one together at the end.\n\n\n\nOrientation day on campus."
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Blog",
+    "section": "",
+    "text": "My first weeks in MDS\n\n\n\n\n\n\n\n\nSep 13, 2026\n\n\nArunark\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "About this site"
+    "text": "I grew up with strong ties to both Oman and India, and moved to Vancouver for my undergrad. I completed my Bachelor of Applied Science in Electrical and Computer Engineering at UBC, where I spent most of my time in research: working on protein language models in a computational biology lab, and later on vision transformer and diffusion architectures. Alongside that, I taught robotics and coding part-time to elementary school students, which turned out to be one of the more grounding parts of my week.\nAnd I have done so many, and I mean so many ML related projects for fun and to gain the depth."
+  },
+  {
+    "objectID": "about.html#background",
+    "href": "about.html#background",
+    "title": "About",
+    "section": "",
+    "text": "I grew up with strong ties to both Oman and India, and moved to Vancouver for my undergrad. I completed my Bachelor of Applied Science in Electrical and Computer Engineering at UBC, where I spent most of my time in research: working on protein language models in a computational biology lab, and later on vision transformer and diffusion architectures. Alongside that, I taught robotics and coding part-time to elementary school students, which turned out to be one of the more grounding parts of my week.\nAnd I have done so many, and I mean so many ML related projects for fun and to gain the depth."
+  },
+  {
+    "objectID": "about.html#why-data-science",
+    "href": "about.html#why-data-science",
+    "title": "About",
+    "section": "Why data science",
+    "text": "Why data science\nMy path into data science came through research, not a classroom. Working with large models and large datasets, I kept running into the same bottleneck: the hard part usually wasn’t the model, it was the data. MDS is where I’m building the statistical and engineering foundation I was missing, so I can move between research-style ML and the kind of data work that actually ships."
+  },
+  {
+    "objectID": "about.html#outside-of-data-science",
+    "href": "about.html#outside-of-data-science",
+    "title": "About",
+    "section": "Outside of data science",
+    "text": "Outside of data science\nOutside of work, I play soccer and basketball, and I’m slowly getting better at neither. I keep a small garden going, mostly tulsi, and chilli, alongside some Pothos and Peperomia that are much harder to kill than the vegetables. I read manga, play games on the PS4 when I get the time, and I build small interactive web projects for fun, usually something no one asked for but that I wanted to see exist."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ArunarkSingh",
+    "section": "",
+    "text": "I completed my Bachelor’s of Applied Science in Electrical Engineering from UBC, and I also specialize in the field of Machine Learning. Because of my interest in ML and Data Science, i decided to further persue MDS at UBC, helping me deepen my knowledge and apply the knowledge in the real world.\nAs a kid I was always curious about the technology that surrounded me, always exploring and always learning. This curiosity is what led me towards electrical engineering at UBC for my bachelors, and what led me to research and dig deep into Machine Learning and Deep Learning systems. I did a bunch of projects, performed research with professors, just to deepen my knowledge of Machine Learning systems. And this is why I am pursuing Master’s of Data Science at UBC, I want to understand and use the Data and information around us to build systems that actually make decisions better, not just process numbers. MDS is giving me the statistical and engineering foundation to go from research-scale ML to something that can work reliably in the real world, and that’s the direction I want to take my career.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
   }
 ]
