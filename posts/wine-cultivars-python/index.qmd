@@ -1,0 +1,102 @@
+---
+title: "Telling wine cultivars apart from their chemistry"
+author: "Arunark"
+date: 2026-09-24
+categories: [python, classification]
+jupyter: python3
+---
+
+Data: [Wine recognition dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#wine-recognition-dataset), bundled with scikit-learn. Original source: Aeberhard, S. and Forina, M. (1992). *Wine* \[Dataset\]. UCI Machine Learning Repository. <https://doi.org/10.24432/C5PC7J>. Licensed CC BY 4.0.
+
+The dataset has 13 chemical measurements for 178 wines grown in the same region of Italy by three different cultivars. The question: how well does chemistry alone identify the cultivar, and do a couple of measurements do most of the work?
+
+## Setup
+
+```{python}
+#| label: setup
+#| warning: false
+import sys
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.datasets import load_wine
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+```
+
+This confirms the post rendered with the project's own Python environment. The path should end in `.venv`, then `Scripts` or `bin`, then the Python executable.
+
+```{python}
+#| label: env-check
+print(Path(sys.executable).parts[-3:])
+```
+
+## Loading the data
+
+```{python}
+#| label: load
+wine = load_wine(as_frame=True)
+df = wine.frame.copy()
+df["cultivar"] = df["target"].map(dict(enumerate(wine.target_names)))
+
+print(df.shape)
+df["cultivar"].value_counts().sort_index()
+```
+
+## How the cultivars differ
+
+```{python}
+#| label: tbl-wine-means
+#| tbl-cap: "Mean of four chemical measurements by cultivar."
+summary = (
+    df.groupby("cultivar")[["alcohol", "flavanoids", "color_intensity", "proline"]]
+    .mean()
+    .round(2)
+)
+summary
+```
+
+@tbl-wine-means shows clear separation. `class_0` has the highest proline and alcohol, `class_1` has the lowest colour intensity, and `class_2` has far fewer flavanoids than the other two.
+
+```{python}
+#| label: fig-wine-scatter
+#| fig-cap: "Flavanoids against colour intensity, coloured by cultivar."
+fig, ax = plt.subplots(figsize=(7, 4.5))
+for name, group in df.groupby("cultivar"):
+    ax.scatter(group["color_intensity"], group["flavanoids"], label=name, alpha=0.7)
+ax.set_xlabel("Colour intensity")
+ax.set_ylabel("Flavanoids")
+ax.legend(title="Cultivar")
+plt.show()
+```
+
+@fig-wine-scatter plots two of those measurements against each other. The three cultivars form mostly separate clusters, with some overlap between `class_0` and `class_1`.
+
+## Classifying cultivars
+
+I fit a standardised logistic regression and score it with 5-fold cross-validation, first on all 13 features and then on only the two from @fig-wine-scatter.
+
+```{python}
+#| label: model
+X_all = df[wine.feature_names]
+X_two = df[["color_intensity", "flavanoids"]]
+y = df["target"]
+
+model = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
+scores_all = cross_val_score(model, X_all, y, cv=5)
+scores_two = cross_val_score(model, X_two, y, cv=5)
+
+results = pd.DataFrame({
+    "features": ["all 13", "colour intensity + flavanoids"],
+    "mean_accuracy": [scores_all.mean(), scores_two.mean()],
+    "sd": [scores_all.std(), scores_two.std()],
+}).round(3)
+results
+```
+
+## What I found
+
+With all 13 features the model reaches a mean cross-validated accuracy of `{python} f"{scores_all.mean():.1%}"`. Using only colour intensity and flavanoids it still reaches `{python} f"{scores_two.mean():.1%}"`. Two measurements carry most of the signal, and the remaining eleven mainly resolve the `class_0` and `class_1` overlap visible in the scatter plot.

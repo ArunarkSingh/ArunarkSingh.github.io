@@ -1,0 +1,80 @@
+---
+title: "Fifty-five years of life expectancy"
+author: "Arunark"
+date: 2026-09-23
+categories: [r, visualization]
+---
+
+Data: [gapminder R package](https://jennybc.github.io/gapminder/) by Jennifer Bryan, an excerpt of data from [Gapminder](https://www.gapminder.org/data/). The package is released under CC0 and the underlying Gapminder data under CC BY 4.0.
+
+The data covers 142 countries every five years from 1952 to 2007. Two questions: which continents gained the most life expectancy over that period, and how closely does life expectancy track income?
+
+## Setup
+
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+library(gapminder)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+## A first look
+
+```{r}
+#| label: overview
+gapminder |>
+  summarise(
+    countries = n_distinct(country),
+    continents = n_distinct(continent),
+    first_year = min(year),
+    last_year = max(year)
+  )
+```
+
+## Gains by continent
+
+```{r}
+#| label: tbl-lifeexp-change
+#| tbl-cap: "Median life expectancy in 1952 and 2007 by continent, sorted by gain."
+change <- gapminder |>
+  group_by(continent) |>
+  summarise(
+    life_1952 = median(lifeExp[year == 1952]),
+    life_2007 = median(lifeExp[year == 2007]),
+    gain = life_2007 - life_1952
+  ) |>
+  arrange(desc(gain))
+
+kable(change, digits = 1)
+```
+
+@tbl-lifeexp-change shows that `r change$continent[1]` gained the most, about `r round(change$gain[1], 1)` years in median life expectancy. Africa started lowest and was still lowest in 2007.
+
+## Life expectancy and income in 2007
+
+```{r}
+#| label: fig-life-gdp
+#| fig-cap: "Life expectancy against GDP per capita in 2007. Point size is population. The x axis is on a log scale."
+gap_2007 <- filter(gapminder, year == 2007)
+
+ggplot(gap_2007, aes(gdpPercap, lifeExp, colour = continent, size = pop)) +
+  geom_point(alpha = 0.7) +
+  scale_x_log10(labels = scales::label_dollar()) +
+  scale_size_area(guide = "none") +
+  labs(x = "GDP per capita (log scale)", y = "Life expectancy (years)", colour = "Continent") +
+  theme_minimal()
+```
+
+```{r}
+#| label: model
+fit <- lm(lifeExp ~ log10(gdpPercap), data = gap_2007)
+coef(fit)
+summary(fit)$r.squared
+```
+
+## What I found
+
+On a log scale the relationship in @fig-life-gdp is close to linear. The model says each tenfold increase in GDP per capita goes with about `r round(coef(fit)[2], 1)` more years of life expectancy, and income alone explains `r scales::percent(summary(fit)$r.squared, accuracy = 1)` of the variation across countries in 2007. The points furthest below the line are mostly African countries, which fits the slower gains in @tbl-lifeexp-change.

@@ -1,0 +1,65 @@
+---
+title: "R and Python in one post"
+author: "Arunark"
+date: 2026-09-25
+categories: [r, python, reticulate]
+engine: knitr
+---
+
+Data: [`mtcars`](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html), built into R. Henderson, H. V. and Velleman, P. F. (1981), from the 1974 *Motor Trend* US magazine.
+
+This post passes data from R to Python, fits a line in Python, and passes the fitted coefficients back to R for plotting. It uses the knitr engine, which sends `{python}` chunks to reticulate in the same session.
+
+## Setup (R)
+
+```{r}
+#| label: setup
+#| message: false
+library(reticulate)
+library(ggplot2)
+
+# Chunks run with the working directory set to this post's folder,
+# so the project's .venv is two levels up.
+use_virtualenv(normalizePath(file.path("..", "..", ".venv")), required = TRUE)
+```
+
+## Prepare the data in R
+
+```{r}
+#| label: r-data
+cars_df <- mtcars[, c("mpg", "wt", "hp")]
+head(cars_df)
+```
+
+## Fit the model in Python
+
+`r.cars_df` reads the R data frame into Python as a pandas DataFrame.
+
+```{python}
+#| label: py-fit
+import sys
+from pathlib import Path
+import numpy as np
+
+print(Path(sys.executable).parts[-3:])
+
+cars = r.cars_df
+slope, intercept = np.polyfit(cars["wt"], cars["mpg"], 1)
+print(f"mpg = {intercept:.2f} + {slope:.2f} * wt")
+```
+
+## Plot in R with the Python result
+
+`py$slope` and `py$intercept` read the Python values back into R.
+
+```{r}
+#| label: fig-mpg-wt
+#| fig-cap: "Fuel economy against weight, with the least-squares line fitted in Python."
+ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  geom_abline(intercept = py$intercept, slope = py$slope, colour = "steelblue") +
+  labs(x = "Weight (1000 lbs)", y = "Miles per gallon") +
+  theme_minimal()
+```
+
+Each extra 1000 lbs of weight costs about `r round(abs(py$slope), 1)` miles per gallon.

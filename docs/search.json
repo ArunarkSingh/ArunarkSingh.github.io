@@ -1,17 +1,94 @@
 [
   {
-    "objectID": "posts/first-weeks/index.html",
-    "href": "posts/first-weeks/index.html",
-    "title": "My first weeks in MDS",
+    "objectID": "posts/wine-cultivars-python/index.html",
+    "href": "posts/wine-cultivars-python/index.html",
+    "title": "Telling wine cultivars apart from their chemistry",
     "section": "",
-    "text": "Orientation week was a bit of a whiplash after four years of undergrad. I came in from an Electrical and Computer Engineering background, having spent most of my final year buried in machine learning research rather than classes, so sitting in a room full of new classmates from economics, biology, and computer science backgrounds was a good reminder of how differently people think about the same data problems. The first few days were less about content and more about tooling: getting comfortable with the terminal, setting up Git and GitHub properly, and realizing how much of this program runs on version control and reproducibility rather than one-off scripts.\nThe first week of actual classes moved fast. What surprised me most was how much emphasis is placed on communication and workflow, things like commit hygiene, writing for a reader who isn’t you, and publishing work publicly, rather than just the statistics and modeling I expected to be the focus. Coming from a research background where a lot of code lived in a single Colab notebook, having to think about project structure, .gitignore-style discipline, and a live website from week one has been a useful shift.\nA few weeks in, I’m feeling good about the pace. It’s demanding, but in a way that feels productive rather than just busy. I’m looking forward to seeing how the more technical courses build on this foundation, and to having a portfolio that actually reflects the work as I go, instead of scrambling to put one together at the end.\n\n\n\nOrientation day on campus."
+    "text": "Data: Wine recognition dataset, bundled with scikit-learn. Original source: Aeberhard, S. and Forina, M. (1992). Wine [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5PC7J. Licensed CC BY 4.0.\nThe dataset has 13 chemical measurements for 178 wines grown in the same region of Italy by three different cultivars. The question: how well does chemistry alone identify the cultivar, and do a couple of measurements do most of the work?"
   },
   {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "Blog",
+    "objectID": "posts/wine-cultivars-python/index.html#setup",
+    "href": "posts/wine-cultivars-python/index.html#setup",
+    "title": "Telling wine cultivars apart from their chemistry",
+    "section": "Setup",
+    "text": "Setup\n\nimport sys\nfrom pathlib import Path\n\nimport matplotlib.pyplot as plt\nimport pandas as pd\nfrom sklearn.datasets import load_wine\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\nThis confirms the post rendered with the project’s own Python environment. The path should end in .venv, then Scripts or bin, then the Python executable.\n\nprint(Path(sys.executable).parts[-3:])\n\n('.venv', 'Scripts', 'python.exe')"
+  },
+  {
+    "objectID": "posts/wine-cultivars-python/index.html#loading-the-data",
+    "href": "posts/wine-cultivars-python/index.html#loading-the-data",
+    "title": "Telling wine cultivars apart from their chemistry",
+    "section": "Loading the data",
+    "text": "Loading the data\n\nwine = load_wine(as_frame=True)\ndf = wine.frame.copy()\ndf[\"cultivar\"] = df[\"target\"].map(dict(enumerate(wine.target_names)))\n\nprint(df.shape)\ndf[\"cultivar\"].value_counts().sort_index()\n\n(178, 15)\n\n\ncultivar\nclass_0    59\nclass_1    71\nclass_2    48\nName: count, dtype: int64"
+  },
+  {
+    "objectID": "posts/wine-cultivars-python/index.html#how-the-cultivars-differ",
+    "href": "posts/wine-cultivars-python/index.html#how-the-cultivars-differ",
+    "title": "Telling wine cultivars apart from their chemistry",
+    "section": "How the cultivars differ",
+    "text": "How the cultivars differ\n\nsummary = (\n    df.groupby(\"cultivar\")[[\"alcohol\", \"flavanoids\", \"color_intensity\", \"proline\"]]\n    .mean()\n    .round(2)\n)\nsummary\n\n\n\nTable 1: Mean of four chemical measurements by cultivar.\n\n\n\n\n\n\n\n\n\n\nalcohol\nflavanoids\ncolor_intensity\nproline\n\n\ncultivar\n\n\n\n\n\n\n\n\nclass_0\n13.74\n2.98\n5.53\n1115.71\n\n\nclass_1\n12.28\n2.08\n3.09\n519.51\n\n\nclass_2\n13.15\n0.78\n7.40\n629.90\n\n\n\n\n\n\n\n\n\n\nTable 1 shows clear separation. class_0 has the highest proline and alcohol, class_1 has the lowest colour intensity, and class_2 has far fewer flavanoids than the other two.\n\nfig, ax = plt.subplots(figsize=(7, 4.5))\nfor name, group in df.groupby(\"cultivar\"):\n    ax.scatter(group[\"color_intensity\"], group[\"flavanoids\"], label=name, alpha=0.7)\nax.set_xlabel(\"Colour intensity\")\nax.set_ylabel(\"Flavanoids\")\nax.legend(title=\"Cultivar\")\nplt.show()\n\n\n\n\n\n\n\nFigure 1: Flavanoids against colour intensity, coloured by cultivar.\n\n\n\n\n\nFigure 1 plots two of those measurements against each other. The three cultivars form mostly separate clusters, with some overlap between class_0 and class_1."
+  },
+  {
+    "objectID": "posts/wine-cultivars-python/index.html#classifying-cultivars",
+    "href": "posts/wine-cultivars-python/index.html#classifying-cultivars",
+    "title": "Telling wine cultivars apart from their chemistry",
+    "section": "Classifying cultivars",
+    "text": "Classifying cultivars\nI fit a standardised logistic regression and score it with 5-fold cross-validation, first on all 13 features and then on only the two from Figure 1.\n\nX_all = df[wine.feature_names]\nX_two = df[[\"color_intensity\", \"flavanoids\"]]\ny = df[\"target\"]\n\nmodel = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))\nscores_all = cross_val_score(model, X_all, y, cv=5)\nscores_two = cross_val_score(model, X_two, y, cv=5)\n\nresults = pd.DataFrame({\n    \"features\": [\"all 13\", \"colour intensity + flavanoids\"],\n    \"mean_accuracy\": [scores_all.mean(), scores_two.mean()],\n    \"sd\": [scores_all.std(), scores_two.std()],\n}).round(3)\nresults\n\n\n\n\n\n\n\n\nfeatures\nmean_accuracy\nsd\n\n\n\n\n0\nall 13\n0.983\n0.014\n\n\n1\ncolour intensity + flavanoids\n0.888\n0.049"
+  },
+  {
+    "objectID": "posts/wine-cultivars-python/index.html#what-i-found",
+    "href": "posts/wine-cultivars-python/index.html#what-i-found",
+    "title": "Telling wine cultivars apart from their chemistry",
+    "section": "What I found",
+    "text": "What I found\nWith all 13 features the model reaches a mean cross-validated accuracy of 98.3%. Using only colour intensity and flavanoids it still reaches 88.8%. Two measurements carry most of the signal, and the remaining eleven mainly resolve the class_0 and class_1 overlap visible in the scatter plot."
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html",
+    "href": "posts/life-expectancy-r/index.html",
+    "title": "Fifty-five years of life expectancy",
     "section": "",
-    "text": "My first weeks in MDS\n\n\n\n\n\n\n\n\nSep 13, 2026\n\n\nArunark\n\n\n\n\n\nNo matching items"
+    "text": "Data: gapminder R package by Jennifer Bryan, an excerpt of data from Gapminder. The package is released under CC0 and the underlying Gapminder data under CC BY 4.0.\nThe data covers 142 countries every five years from 1952 to 2007. Two questions: which continents gained the most life expectancy over that period, and how closely does life expectancy track income?"
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html#setup",
+    "href": "posts/life-expectancy-r/index.html#setup",
+    "title": "Fifty-five years of life expectancy",
+    "section": "Setup",
+    "text": "Setup\n\nlibrary(gapminder)\nlibrary(dplyr)\nlibrary(ggplot2)\nlibrary(knitr)"
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html#a-first-look",
+    "href": "posts/life-expectancy-r/index.html#a-first-look",
+    "title": "Fifty-five years of life expectancy",
+    "section": "A first look",
+    "text": "A first look\n\ngapminder |&gt;\n  summarise(\n    countries = n_distinct(country),\n    continents = n_distinct(continent),\n    first_year = min(year),\n    last_year = max(year)\n  )\n\n# A tibble: 1 × 4\n  countries continents first_year last_year\n      &lt;int&gt;      &lt;int&gt;      &lt;int&gt;     &lt;int&gt;\n1       142          5       1952      2007"
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html#gains-by-continent",
+    "href": "posts/life-expectancy-r/index.html#gains-by-continent",
+    "title": "Fifty-five years of life expectancy",
+    "section": "Gains by continent",
+    "text": "Gains by continent\n\nchange &lt;- gapminder |&gt;\n  group_by(continent) |&gt;\n  summarise(\n    life_1952 = median(lifeExp[year == 1952]),\n    life_2007 = median(lifeExp[year == 2007]),\n    gain = life_2007 - life_1952\n  ) |&gt;\n  arrange(desc(gain))\n\nkable(change, digits = 1)\n\n\n\nTable 1: Median life expectancy in 1952 and 2007 by continent, sorted by gain.\n\n\n\n\n\n\ncontinent\nlife_1952\nlife_2007\ngain\n\n\n\n\nAsia\n44.9\n72.4\n27.5\n\n\nAmericas\n54.7\n72.9\n18.2\n\n\nAfrica\n38.8\n52.9\n14.1\n\n\nEurope\n65.9\n78.6\n12.7\n\n\nOceania\n69.3\n80.7\n11.5\n\n\n\n\n\n\n\n\nTable 1 shows that Asia gained the most, about 27.5 years in median life expectancy. Africa started lowest and was still lowest in 2007."
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html#life-expectancy-and-income-in-2007",
+    "href": "posts/life-expectancy-r/index.html#life-expectancy-and-income-in-2007",
+    "title": "Fifty-five years of life expectancy",
+    "section": "Life expectancy and income in 2007",
+    "text": "Life expectancy and income in 2007\n\ngap_2007 &lt;- filter(gapminder, year == 2007)\n\nggplot(gap_2007, aes(gdpPercap, lifeExp, colour = continent, size = pop)) +\n  geom_point(alpha = 0.7) +\n  scale_x_log10(labels = scales::label_dollar()) +\n  scale_size_area(guide = \"none\") +\n  labs(x = \"GDP per capita (log scale)\", y = \"Life expectancy (years)\", colour = \"Continent\") +\n  theme_minimal()\n\n\n\n\n\n\n\nFigure 1: Life expectancy against GDP per capita in 2007. Point size is population. The x axis is on a log scale.\n\n\n\n\n\n\nfit &lt;- lm(lifeExp ~ log10(gdpPercap), data = gap_2007)\ncoef(fit)\n\n     (Intercept) log10(gdpPercap) \n        4.949612        16.585064 \n\nsummary(fit)$r.squared\n\n[1] 0.654449"
+  },
+  {
+    "objectID": "posts/life-expectancy-r/index.html#what-i-found",
+    "href": "posts/life-expectancy-r/index.html#what-i-found",
+    "title": "Fifty-five years of life expectancy",
+    "section": "What I found",
+    "text": "What I found\nOn a log scale the relationship in Figure 1 is close to linear. The model says each tenfold increase in GDP per capita goes with about 16.6 more years of life expectancy, and income alone explains 65% of the variation across countries in 2007. The points furthest below the line are mostly African countries, which fits the slower gains in Table 1."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ArunarkSingh",
+    "section": "",
+    "text": "I completed my Bachelor’s of Applied Science in Electrical Engineering from UBC, and I also specialize in the field of Machine Learning. Because of my interest in ML and Data Science, i decided to further persue MDS at UBC, helping me deepen my knowledge and apply the knowledge in the real world.\nAs a kid I was always curious about the technology that surrounded me, always exploring and always learning. This curiosity is what led me towards electrical engineering at UBC for my bachelors, and what led me to research and dig deep into Machine Learning and Deep Learning systems. I did a bunch of projects, performed research with professors, just to deepen my knowledge of Machine Learning systems. And this is why I am pursuing Master’s of Data Science at UBC, I want to understand and use the Data and information around us to build systems that actually make decisions better, not just process numbers. MDS is giving me the statistical and engineering foundation to go from research-scale ML to something that can work reliably in the real world, and that’s the direction I want to take my career.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
   },
   {
     "objectID": "about.html",
@@ -42,10 +119,52 @@
     "text": "Outside of data science\nOutside of work, I play soccer and basketball, and I’m slowly getting better at neither. I keep a small garden going, mostly tulsi, and chilli, alongside some Pothos and Peperomia that are much harder to kill than the vegetables. I read manga, play games on the PS4 when I get the time, and I build small interactive web projects for fun, usually something no one asked for but that I wanted to see exist."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ArunarkSingh",
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Blog",
     "section": "",
-    "text": "I completed my Bachelor’s of Applied Science in Electrical Engineering from UBC, and I also specialize in the field of Machine Learning. Because of my interest in ML and Data Science, i decided to further persue MDS at UBC, helping me deepen my knowledge and apply the knowledge in the real world.\nAs a kid I was always curious about the technology that surrounded me, always exploring and always learning. This curiosity is what led me towards electrical engineering at UBC for my bachelors, and what led me to research and dig deep into Machine Learning and Deep Learning systems. I did a bunch of projects, performed research with professors, just to deepen my knowledge of Machine Learning systems. And this is why I am pursuing Master’s of Data Science at UBC, I want to understand and use the Data and information around us to build systems that actually make decisions better, not just process numbers. MDS is giving me the statistical and engineering foundation to go from research-scale ML to something that can work reliably in the real world, and that’s the direction I want to take my career.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "R and Python in one post\n\n\n\n\n\n\n\n\nSep 25, 2026\n\n\nArunark\n\n\n\n\n\n\n\n\n\n\n\n\nTelling wine cultivars apart from their chemistry\n\n\n\n\n\n\n\n\nSep 24, 2026\n\n\nArunark\n\n\n\n\n\n\n\n\n\n\n\n\nFifty-five years of life expectancy\n\n\n\n\n\n\n\n\nSep 23, 2026\n\n\nArunark\n\n\n\n\n\n\n\n\n\n\n\n\nMy first weeks in MDS\n\n\n\n\n\n\n\n\nSep 13, 2026\n\n\nArunark\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/first-weeks/index.html",
+    "href": "posts/first-weeks/index.html",
+    "title": "My first weeks in MDS",
+    "section": "",
+    "text": "Orientation week was a bit of a whiplash after four years of undergrad. I came in from an Electrical and Computer Engineering background, having spent most of my final year buried in machine learning research rather than classes, so sitting in a room full of new classmates from economics, biology, and computer science backgrounds was a good reminder of how differently people think about the same data problems. The first few days were less about content and more about tooling: getting comfortable with the terminal, setting up Git and GitHub properly, and realizing how much of this program runs on version control and reproducibility rather than one-off scripts.\nThe first week of actual classes moved fast. What surprised me most was how much emphasis is placed on communication and workflow, things like commit hygiene, writing for a reader who isn’t you, and publishing work publicly, rather than just the statistics and modeling I expected to be the focus. Coming from a research background where a lot of code lived in a single Colab notebook, having to think about project structure, .gitignore-style discipline, and a live website from week one has been a useful shift.\nA few weeks in, I’m feeling good about the pace. It’s demanding, but in a way that feels productive rather than just busy. I’m looking forward to seeing how the more technical courses build on this foundation, and to having a portfolio that actually reflects the work as I go, instead of scrambling to put one together at the end.\n\n\n\nOrientation day on campus."
+  },
+  {
+    "objectID": "posts/r-and-python/index.html",
+    "href": "posts/r-and-python/index.html",
+    "title": "R and Python in one post",
+    "section": "",
+    "text": "Data: mtcars, built into R. Henderson, H. V. and Velleman, P. F. (1981), from the 1974 Motor Trend US magazine.\nThis post passes data from R to Python, fits a line in Python, and passes the fitted coefficients back to R for plotting. It uses the knitr engine, which sends {python} chunks to reticulate in the same session."
+  },
+  {
+    "objectID": "posts/r-and-python/index.html#setup-r",
+    "href": "posts/r-and-python/index.html#setup-r",
+    "title": "R and Python in one post",
+    "section": "Setup (R)",
+    "text": "Setup (R)\n\nlibrary(reticulate)\nlibrary(ggplot2)\n\n# Chunks run with the working directory set to this post's folder,\n# so the project's .venv is two levels up.\nuse_virtualenv(normalizePath(file.path(\"..\", \"..\", \".venv\")), required = TRUE)"
+  },
+  {
+    "objectID": "posts/r-and-python/index.html#prepare-the-data-in-r",
+    "href": "posts/r-and-python/index.html#prepare-the-data-in-r",
+    "title": "R and Python in one post",
+    "section": "Prepare the data in R",
+    "text": "Prepare the data in R\n\ncars_df &lt;- mtcars[, c(\"mpg\", \"wt\", \"hp\")]\nhead(cars_df)\n\n                   mpg    wt  hp\nMazda RX4         21.0 2.620 110\nMazda RX4 Wag     21.0 2.875 110\nDatsun 710        22.8 2.320  93\nHornet 4 Drive    21.4 3.215 110\nHornet Sportabout 18.7 3.440 175\nValiant           18.1 3.460 105"
+  },
+  {
+    "objectID": "posts/r-and-python/index.html#fit-the-model-in-python",
+    "href": "posts/r-and-python/index.html#fit-the-model-in-python",
+    "title": "R and Python in one post",
+    "section": "Fit the model in Python",
+    "text": "Fit the model in Python\nr.cars_df reads the R data frame into Python as a pandas DataFrame.\n\nimport sys\nfrom pathlib import Path\nimport numpy as np\n\nprint(Path(sys.executable).parts[-3:])\n\n('VENV~1', 'Scripts', 'python.exe')\n\ncars = r.cars_df\nslope, intercept = np.polyfit(cars[\"wt\"], cars[\"mpg\"], 1)\nprint(f\"mpg = {intercept:.2f} + {slope:.2f} * wt\")\n\nmpg = 37.29 + -5.34 * wt"
+  },
+  {
+    "objectID": "posts/r-and-python/index.html#plot-in-r-with-the-python-result",
+    "href": "posts/r-and-python/index.html#plot-in-r-with-the-python-result",
+    "title": "R and Python in one post",
+    "section": "Plot in R with the Python result",
+    "text": "Plot in R with the Python result\npy$slope and py$intercept read the Python values back into R.\n\nggplot(mtcars, aes(wt, mpg)) +\n  geom_point() +\n  geom_abline(intercept = py$intercept, slope = py$slope, colour = \"steelblue\") +\n  labs(x = \"Weight (1000 lbs)\", y = \"Miles per gallon\") +\n  theme_minimal()\n\n\n\n\n\n\n\nFigure 1: Fuel economy against weight, with the least-squares line fitted in Python.\n\n\n\n\n\nEach extra 1000 lbs of weight costs about 5.3 miles per gallon."
   }
 ]
