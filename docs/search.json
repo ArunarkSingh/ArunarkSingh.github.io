@@ -4,7 +4,7 @@
     "href": "posts/wine-cultivars-python/index.html",
     "title": "Telling wine cultivars apart from their chemistry",
     "section": "",
-    "text": "Data: Wine recognition dataset, bundled with scikit-learn. Original source: Aeberhard, S. and Forina, M. (1992). Wine [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5PC7J. Licensed CC BY 4.0.\nThe dataset has 13 chemical measurements for 178 wines grown in the same region of Italy by three different cultivars. The question: how well does chemistry alone identify the cultivar, and do a couple of measurements do most of the work?"
+    "text": "Description: “Classifying Italian wines by cultivar with logistic regression.”\nData: Wine recognition dataset, bundled with scikit-learn. Original source: Aeberhard, S. and Forina, M. (1992). Wine [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5PC7J. Licensed CC BY 4.0.\nThe dataset has 13 chemical measurements for 178 wines grown in the same region of Italy by three different cultivars. The question: how well does chemistry alone identify the cultivar, and do a couple of measurements do most of the work?"
   },
   {
     "objectID": "posts/wine-cultivars-python/index.html#setup",
@@ -46,7 +46,7 @@
     "href": "posts/life-expectancy-r/index.html",
     "title": "Fifty-five years of life expectancy",
     "section": "",
-    "text": "Data: gapminder R package by Jennifer Bryan, an excerpt of data from Gapminder. The package is released under CC0 and the underlying Gapminder data under CC BY 4.0.\nThe data covers 142 countries every five years from 1952 to 2007. Two questions: which continents gained the most life expectancy over that period, and how closely does life expectancy track income?"
+    "text": "Description: “How life expectancy changed by continent from 1952 to 2007, and how it tracks income.\nData: gapminder R package by Jennifer Bryan, an excerpt of data from Gapminder. The package is released under CC0 and the underlying Gapminder data under CC BY 4.0.\nThe data covers 142 countries every five years from 1952 to 2007. Two questions: which continents gained the most life expectancy over that period, and how closely does life expectancy track income?"
   },
   {
     "objectID": "posts/life-expectancy-r/index.html#setup",
@@ -81,7 +81,7 @@
     "href": "posts/life-expectancy-r/index.html#what-i-found",
     "title": "Fifty-five years of life expectancy",
     "section": "What I found",
-    "text": "What I found\nOn a log scale the relationship in Figure 1 is close to linear. The model says each tenfold increase in GDP per capita goes with about 16.6 more years of life expectancy, and income alone explains 65% of the variation across countries in 2007. The points furthest below the line are mostly African countries, which fits the slower gains in Table 1."
+    "text": "What I found\nOn a log scale the relationship in Figure 1 is close to linear. The model says each tenfold increase in GDP per capita goes with about 16.6 more years of life expectancy, and income alone explains 65% of the variation across countries in 2007. The points furthest below the line are mostly African countries, which matches Africa having the lowest median life expectancy in both 1952 and 2007 (Table 1)."
   },
   {
     "objectID": "index.html",
@@ -137,7 +137,7 @@
     "href": "posts/r-and-python/index.html",
     "title": "R and Python in one post",
     "section": "",
-    "text": "Data: mtcars, built into R. Henderson, H. V. and Velleman, P. F. (1981), from the 1974 Motor Trend US magazine.\nThis post passes data from R to Python, fits a line in Python, and passes the fitted coefficients back to R for plotting. It uses the knitr engine, which sends {python} chunks to reticulate in the same session."
+    "text": "Description: “Passing data between R and Python with reticulate.”\nData: mtcars, built into R. Henderson, H. V. and Velleman, P. F. (1981), from the 1974 Motor Trend US magazine.\nThis post passes data from R to Python, fits a line in Python, and passes the fitted coefficients back to R for plotting. It uses the knitr engine, which sends {python} chunks to reticulate in the same session."
   },
   {
     "objectID": "posts/r-and-python/index.html#setup-r",
@@ -158,7 +158,7 @@
     "href": "posts/r-and-python/index.html#fit-the-model-in-python",
     "title": "R and Python in one post",
     "section": "Fit the model in Python",
-    "text": "Fit the model in Python\nr.cars_df reads the R data frame into Python as a pandas DataFrame.\n\nimport sys\nfrom pathlib import Path\nimport numpy as np\n\nprint(Path(sys.executable).parts[-3:])\n\n('VENV~1', 'Scripts', 'python.exe')\n\ncars = r.cars_df\nslope, intercept = np.polyfit(cars[\"wt\"], cars[\"mpg\"], 1)\nprint(f\"mpg = {intercept:.2f} + {slope:.2f} * wt\")\n\nmpg = 37.29 + -5.34 * wt"
+    "text": "Fit the model in Python\nr.cars_df reads the R data frame into Python as a pandas DataFrame.\n\nimport sys\nfrom pathlib import Path\nimport numpy as np\n\nprint(Path(sys.executable).resolve().parts[-3:])\n\n('.venv', 'Scripts', 'python.exe')\n\ncars = r.cars_df\nslope, intercept = np.polyfit(cars[\"wt\"], cars[\"mpg\"], 1)\nprint(f\"mpg = {intercept:.2f} - {abs(slope):.2f} * wt\")\n\nmpg = 37.29 - 5.34 * wt"
   },
   {
     "objectID": "posts/r-and-python/index.html#plot-in-r-with-the-python-result",

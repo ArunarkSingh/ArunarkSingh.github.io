@@ -6,6 +6,8 @@ categories: [r, python, reticulate]
 engine: knitr
 ---
 
+Description: "Passing data between R and Python with reticulate."
+
 Data: [`mtcars`](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html), built into R. Henderson, H. V. and Velleman, P. F. (1981), from the 1974 *Motor Trend* US magazine.
 
 This post passes data from R to Python, fits a line in Python, and passes the fitted coefficients back to R for plotting. It uses the knitr engine, which sends `{python}` chunks to reticulate in the same session.
@@ -41,11 +43,11 @@ import sys
 from pathlib import Path
 import numpy as np
 
-print(Path(sys.executable).parts[-3:])
+print(Path(sys.executable).resolve().parts[-3:])
 
 cars = r.cars_df
 slope, intercept = np.polyfit(cars["wt"], cars["mpg"], 1)
-print(f"mpg = {intercept:.2f} + {slope:.2f} * wt")
+print(f"mpg = {intercept:.2f} - {abs(slope):.2f} * wt")
 ```
 
 ## Plot in R with the Python result

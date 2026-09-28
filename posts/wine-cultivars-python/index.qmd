@@ -6,6 +6,8 @@ categories: [python, classification]
 jupyter: python3
 ---
 
+Description: "Classifying Italian wines by cultivar with logistic regression."
+
 Data: [Wine recognition dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#wine-recognition-dataset), bundled with scikit-learn. Original source: Aeberhard, S. and Forina, M. (1992). *Wine* \[Dataset\]. UCI Machine Learning Repository. <https://doi.org/10.24432/C5PC7J>. Licensed CC BY 4.0.
 
 The dataset has 13 chemical measurements for 178 wines grown in the same region of Italy by three different cultivars. The question: how well does chemistry alone identify the cultivar, and do a couple of measurements do most of the work?

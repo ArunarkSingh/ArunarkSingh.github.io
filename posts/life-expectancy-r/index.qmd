@@ -5,6 +5,8 @@ date: 2026-09-23
 categories: [r, visualization]
 ---
 
+Description: "How life expectancy changed by continent from 1952 to 2007, and how it tracks income.
+
 Data: [gapminder R package](https://jennybc.github.io/gapminder/) by Jennifer Bryan, an excerpt of data from [Gapminder](https://www.gapminder.org/data/). The package is released under CC0 and the underlying Gapminder data under CC BY 4.0.
 
 The data covers 142 countries every five years from 1952 to 2007. Two questions: which continents gained the most life expectancy over that period, and how closely does life expectancy track income?
@@ -77,4 +79,4 @@ summary(fit)$r.squared
 
 ## What I found
 
-On a log scale the relationship in @fig-life-gdp is close to linear. The model says each tenfold increase in GDP per capita goes with about `r round(coef(fit)[2], 1)` more years of life expectancy, and income alone explains `r scales::percent(summary(fit)$r.squared, accuracy = 1)` of the variation across countries in 2007. The points furthest below the line are mostly African countries, which fits the slower gains in @tbl-lifeexp-change.
+On a log scale the relationship in @fig-life-gdp is close to linear. The model says each tenfold increase in GDP per capita goes with about `r round(coef(fit)[2], 1)` more years of life expectancy, and income alone explains `r scales::percent(summary(fit)$r.squared, accuracy = 1)` of the variation across countries in 2007. The points furthest below the line are mostly African countries, which matches Africa having the lowest median life expectancy in both 1952 and 2007 (@tbl-lifeexp-change).
